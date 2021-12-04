@@ -1,0 +1,9 @@
+#忽略以下目录
+build/
+MDK-ARM/Listings/
+MDK-ARM/Objects/
+
+#忽略以下文件
+*.uvguix.*
+*.scvd
+.cortex-debug.*

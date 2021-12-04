@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",           // 编译
+            "type": "shell",
+            "command": "C:/mingw64/bin/mingw32-make.exe",
+            "args": [
+                "DEBUG=1"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "make"
+        },
+        {
+            "label": "Build(Release)",  // 编译
+            "type": "shell",
+            "command": "C:/mingw64/bin/mingw32-make.exe",
+            "args": [
+                ""
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "make"
+        },
+        {
+            "label": "Clean",           // 清理
+            "type": "shell",
+            "command": "C:/mingw64/bin/mingw32-make.exe",
+            "args": [
+                "clean"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "make clean"
+        }
+    ]
+}
