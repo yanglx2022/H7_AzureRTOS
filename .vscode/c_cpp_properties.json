@@ -11,14 +11,23 @@
                 "${workspaceFolder}/User/hardware",
                 "${workspaceFolder}/Drivers/threadx-6.1.9_rel/common/inc",
                 "${workspaceFolder}/Drivers/threadx-6.1.9_rel/ports/cortex_m7/gnu/inc",
-                "${workspaceFolder}/User/threadx"
+                "${workspaceFolder}/User/threadx",
+                "${workspaceFolder}/Drivers/usbx-6.1.9_rel/common/core/inc",
+                "${workspaceFolder}/Drivers/usbx-6.1.9_rel/common/usbx_device_classes/inc",
+                "${workspaceFolder}/Drivers/usbx-6.1.9_rel/ports/cortex_m7/gnu/inc",
+                "${workspaceFolder}/Drivers/usbx_stm32/usbx_stm32_device_controllers",
+                "${workspaceFolder}/User/usbx",
+                "${workspaceFolder}/Drivers/levelx-6.1.9_rel/common/inc",
+                "${workspaceFolder}/User/levelx"
             ],
             "defines": [
                 "__GNUC__",
                 "STM32H743xx",
                 "USE_FULL_LL_DRIVER",
                 "USE_HAL_DRIVER",
-                "TX_INCLUDE_USER_DEFINE_FILE"
+                "TX_INCLUDE_USER_DEFINE_FILE",
+                "UX_INCLUDE_USER_DEFINE_FILE",
+                "LX_INCLUDE_USER_DEFINE_FILE"
             ],
             "compilerPath": "C:\\gcc-arm-none-eabi\\bin\\arm-none-eabi-gcc.exe",
             "cStandard": "gnu99",

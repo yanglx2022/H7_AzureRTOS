@@ -116,7 +116,6 @@
    Note: the actual hardware timer value may need to be changed (usually in tx_initialize_low_level).  */
    
 // 注意一定要同步修改tx_initialize_low_level.s中的SYSTICK_CYCLES
-
 #define TX_TIMER_TICKS_PER_SECOND         ((ULONG) 100)
 
 // ms转tick数 方便以ms为单位sleep

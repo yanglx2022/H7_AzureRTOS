@@ -8,48 +8,33 @@
 #include "common.h"
 #include "sdram.h"
 #include "idle_task.h"
+#include "usb_device.h"
+#include "lx_nand_driver.h"
+
 
 int main(void)
 {
+    // 硬件初始化
     Sys_Init();
     SDRAM_Init();
+    NAND_Init();
 
-    // printf测试(中文需要串口调试助手支持UTF-8)
-    float pi = 3.14159f;
-    printf("hello world 你好 %.2f\n", pi);
-
-    // SDRAM测试
-    uint8_t* data = (uint8_t*)SDRAM_BASE;
-    for(int i = 0; i < 100; i++)
-    {
-        data[i] = i;
-    }
-    for(int i = 0; i < 100; i++)
-    {
-        if (data[i] != i)
-        {
-            printf("SDRAM Test Failed!\n");
-            break;
-        }
-    }
-    printf("SDRAM Test Finished\n");
-
-    // 延时测试
-    for(int i = 0; i < 10; i++)
-    {
-        printf("%d\n", i);
-        delay_ms(1000);
-    }
-
-    // ThreadX
+    // 进入系统
     tx_kernel_enter();
     while(1);
 }
 
+// 启动任务
 void tx_application_define(void* first_unused_memory)
 {
     // 空闲任务
     idle_thread_create();
+
+    // LevelX初始化
+    lx_nand_flash_initialize();
+    lx_nand_flash_open(&nand_flash, "nand flash", nand_driver_initialize);
+    // USBX初始化
+    usb_init();
 }
 
 

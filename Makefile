@@ -20,12 +20,30 @@ $(wildcard User/hardware/*.c)
 # STM32H7xx
 C_SOURCES +=  \
 Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/system_stm32h7xx.c \
-$(wildcard Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll*.c)
+$(wildcard Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll*.c) \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_nand.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd_ex.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c
 #$(filter-out Drivers/STM32H7xx_HAL_Driver/Src/%_template.c, $(wildcard Drivers/STM32H7xx_HAL_Driver/Src/*.c)) # 排除_template.c
 
 # ThreadX
 C_SOURCES +=  \
 $(wildcard Drivers/threadx-6.1.9_rel/common/src/*.c)
+
+# USBX
+C_SOURCES +=  \
+$(wildcard Drivers/usbx-6.1.9_rel/common/core/src/ux_device_stack_*.c) \
+$(wildcard Drivers/usbx-6.1.9_rel/common/core/src/ux_system_*.c) \
+$(wildcard Drivers/usbx-6.1.9_rel/common/core/src/ux_utility_*.c) \
+$(wildcard Drivers/usbx-6.1.9_rel/common/usbx_device_classes/src/ux_device_class_storage_*.c) \
+$(wildcard Drivers/usbx_stm32/usbx_stm32_device_controllers/*.c) \
+$(wildcard User/usbx/*.c) 
+
+# LevelX
+C_SOURCES +=  \
+$(wildcard Drivers/levelx-6.1.9_rel/common/src/lx_nand_*.c) \
+$(wildcard User/levelx/*.c) 
 
 # ASM源文件
 ASM_SOURCES =  \
@@ -44,7 +62,14 @@ C_INCLUDES =  \
 -IUser/hardware \
 -IDrivers/threadx-6.1.9_rel/common/inc \
 -IDrivers/threadx-6.1.9_rel/ports/cortex_m7/gnu/inc \
--IUser/threadx
+-IUser/threadx \
+-IDrivers/usbx-6.1.9_rel/common/core/inc \
+-IDrivers/usbx-6.1.9_rel/common/usbx_device_classes/inc \
+-IDrivers/usbx-6.1.9_rel/ports/cortex_m7/gnu/inc \
+-IDrivers/usbx_stm32/usbx_stm32_device_controllers \
+-IUser/usbx \
+-IDrivers/levelx-6.1.9_rel/common/inc \
+-IUser/levelx
 
 ######################################
 # 编译器
@@ -64,7 +89,9 @@ C_DEFS =  \
 -DUSE_FULL_LL_DRIVER \
 -DUSE_HAL_DRIVER \
 -DSTM32H743xx \
--DTX_INCLUDE_USER_DEFINE_FILE
+-DTX_INCLUDE_USER_DEFINE_FILE \
+-DUX_INCLUDE_USER_DEFINE_FILE \
+-DLX_INCLUDE_USER_DEFINE_FILE
 
 # 优化等级 
 # -O0 不优化
@@ -94,7 +121,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # 链接选项
 #######################################
 # LD脚本
-LDSCRIPT = Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/gcc/STM32H743IITx_FLASH.ld
+LDSCRIPT = Drivers/CMSIS/Device/ST/STM32H7xx/Source/Templates/gcc/STM32H743IITx.ld
 
 # 库
 LIBS = -lc -lm -lnosys
@@ -133,7 +160,7 @@ $(BUILD_DIR)/%.o: %.S Makefile | $(BUILD_DIR)
 	$(AS) -c $(ASFLAGS) $< -o $@
 
 # 链接生成可执行文件并拷贝至OUTPUT目录
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile $(LDSCRIPT)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
 

@@ -15,19 +15,6 @@
             "detail": "make"
         },
         {
-            "label": "Build(Release)",  // 编译
-            "type": "shell",
-            "command": "C:/mingw64/bin/mingw32-make.exe",
-            "args": [
-                ""
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "make"
-        },
-        {
             "label": "Clean",           // 清理
             "type": "shell",
             "command": "C:/mingw64/bin/mingw32-make.exe",
@@ -39,6 +26,42 @@
             ],
             "group": "build",
             "detail": "make clean"
+        },
+        {
+            "label": "Download",        // 下载
+            "type": "shell",
+            "command":[
+                "C:\\openocd-v0.11.0-i686-w64-mingw32\\bin\\openocd.exe",
+                "-f C:\\openocd-v0.11.0-i686-w64-mingw32\\share\\openocd\\scripts\\interface\\stlink.cfg",  // ST-LINK
+                "-f C:\\openocd-v0.11.0-i686-w64-mingw32\\share\\openocd\\scripts\\target\\stm32h7x.cfg",   // 根据目标设备选择对应的配置
+                "-c init",
+                "-c halt",
+                "-c 'flash write_image erase Output/${workspaceFolderBasename}.hex'",                       // 下载固件
+                "-c shutdown"
+            ],
+            "args": [
+            ],
+            "group": "build",
+            "detail": "烧写固件(不编译,使用Output中的HEX文件)"
+        },
+        {
+            "label": "Download & Run",  // 下载并运行
+            "type": "shell",
+            "command":[
+                "C:\\openocd-v0.11.0-i686-w64-mingw32\\bin\\openocd.exe",
+                "-f C:\\openocd-v0.11.0-i686-w64-mingw32\\share\\openocd\\scripts\\interface\\stlink.cfg",  // ST-LINK
+                "-f C:\\openocd-v0.11.0-i686-w64-mingw32\\share\\openocd\\scripts\\target\\stm32h7x.cfg",   // 根据目标设备选择对应的配置
+                "-c 'reset_config none'",
+                "-c init",
+                "-c halt",
+                "-c 'flash write_image erase Output/${workspaceFolderBasename}.hex'",                       // 下载固件
+                "-c reset",
+                "-c shutdown"
+            ],
+            "args": [
+            ],
+            "group": "build",
+            "detail": "烧写固件并运行(不编译,使用Output中的HEX文件)"
         }
     ]
 }

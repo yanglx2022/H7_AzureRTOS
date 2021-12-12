@@ -21,6 +21,8 @@ extern "C" {
 #include "stm32h7xx_ll_usart.h"
 #include "stm32h7xx_ll_gpio.h"
 #include "stdio.h"
+#include "string.h"
+#include "memory.h"
 
 // 硬件驱动返回值
 typedef enum
@@ -66,7 +68,7 @@ __STATIC_INLINE uint32_t get_cpu_tick(void)
 }
 
 /**
- * @brief : cpu tick转ns(主频400MHz)
+ * @brief : cpu tick转ns(主频400MHz,约2.15s溢出)
  * @param  cpu_tick cpu tick值
  * @return ns
  */

@@ -57,21 +57,21 @@ static void MPU_Cache_Config(void)
 
     // MPU配置前禁能
     LL_MPU_Disable();
-    // AXI SRAM(Normal, Write through)
+    // AXI SRAM最高性能(Normal, Write back, Write allocate)
     LL_MPU_ConfigRegion(LL_MPU_REGION_NUMBER0, 
                         0x00,                               // 子区域全使能
-                        0x24000000,                         // AXI SRAM地址
+                        AXI_SRAM_BASE,                      // AXI SRAM地址
                         LL_MPU_INSTRUCTION_ACCESS_ENABLE |  // 允许执行代码
                         LL_MPU_REGION_FULL_ACCESS        |  // 完全访问权限(特权与非特权模式均读写)
-                        LL_MPU_TEX_LEVEL0                |  // TEX=000
+                        LL_MPU_TEX_LEVEL1                |  // TEX=001
                         LL_MPU_ACCESS_NOT_SHAREABLE      |  // S=0关闭共享
                         LL_MPU_ACCESS_CACHEABLE          |  // C=1使能Cache
-                        LL_MPU_ACCESS_NOT_BUFFERABLE     |  // B=0禁止缓冲
+                        LL_MPU_ACCESS_BUFFERABLE         |  // B=1禁止缓冲
                         LL_MPU_REGION_SIZE_512KB);          // 512KB
     // SDRAM(Normal, Write through)
     LL_MPU_ConfigRegion(LL_MPU_REGION_NUMBER1, 
                         0x00,                               // 子区域全使能
-                        0xC0000000,                         // SDRAM地址
+                        SDRAM_BASE,                         // SDRAM地址
                         LL_MPU_INSTRUCTION_ACCESS_ENABLE |  // 允许执行代码
                         LL_MPU_REGION_FULL_ACCESS        |  // 完全访问权限(特权与非特权模式均读写)
                         LL_MPU_TEX_LEVEL0                |  // TEX=000
@@ -79,6 +79,17 @@ static void MPU_Cache_Config(void)
                         LL_MPU_ACCESS_CACHEABLE          |  // C=1使能Cache
                         LL_MPU_ACCESS_NOT_BUFFERABLE     |  // B=0禁止缓冲
                         LL_MPU_REGION_SIZE_32MB);           // 32MB
+    // NAND Flash内存类型Device
+    LL_MPU_ConfigRegion(LL_MPU_REGION_NUMBER2, 
+                        0x00,                               // 子区域全使能
+                        NAND_DEVICE,                        // SDRAM地址
+                        LL_MPU_INSTRUCTION_ACCESS_ENABLE |  // 允许执行代码
+                        LL_MPU_REGION_FULL_ACCESS        |  // 完全访问权限(特权与非特权模式均读写)
+                        LL_MPU_TEX_LEVEL0                |  // TEX=000
+                        LL_MPU_ACCESS_NOT_SHAREABLE      |  // S=0关闭共享
+                        LL_MPU_ACCESS_NOT_CACHEABLE      |  // C=0
+                        LL_MPU_ACCESS_BUFFERABLE         |  // B=1
+                        LL_MPU_REGION_SIZE_512MB);          // 512MB
     // 使能MPU
     LL_MPU_Enable(LL_MPU_CTRL_PRIVILEGED_DEFAULT);	// 使能背景区, NMI与HardFault中断中关闭MPU
     // 开启Cache
@@ -105,9 +116,9 @@ static void SystemClock_Config(void)
     LL_RCC_HSE_Enable();
     while(LL_RCC_HSE_IsReady() == 0);
 
-    // // 使能HSI48(USB使用)
-    // LL_RCC_HSI48_Enable();
-    // while(LL_RCC_HSI48_IsReady() == 0);
+    // 使能HSI48(USB使用)
+    LL_RCC_HSI48_Enable();
+    while(LL_RCC_HSI48_IsReady() == 0);
 
     // // 使能后备区
     // LL_PWR_EnableBkUpAccess();
@@ -189,13 +200,12 @@ static void SystemClock_Config(void)
     // 设置外设时钟源
     LL_RCC_SetUSARTClockSource(LL_RCC_USART16_CLKSOURCE_PCLK2);
     LL_RCC_SetFMCClockSource(LL_RCC_FMC_CLKSOURCE_HCLK);
-    // LL_RCC_SetUSBClockSource(LL_RCC_USB_CLKSOURCE_HSI48);
+    LL_RCC_SetUSBClockSource(LL_RCC_USB_CLKSOURCE_HSI48);
     // LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSE);
     // LL_RCC_SetQSPIClockSource(LL_RCC_QSPI_CLKSOURCE_HCLK);
     // LL_RCC_SetSDMMCClockSource(LL_RCC_SDMMC_CLKSOURCE_PLL2R);
     // LL_RCC_SetADCClockSource(LL_RCC_ADC_CLKSOURCE_PLL2P);
 }
-
 
 // 延时初始化
 static void Delay_Init(void)
@@ -269,7 +279,7 @@ uint32_t get_tick_ms(void)
     else
     {
         // 使用RTOS但RTOS尚未运行的话利用DWT的tick,注意此时一个循环只有10.7s(400MHz时)
-        return (cpu_tick_to_ns(get_cpu_tick()) / 1000000);
+        return (cpu_tick_to_ns(get_cpu_tick() / 1000000));
     }
     #else
     return tick_ms;
@@ -354,16 +364,17 @@ int _write(int fd, char *ptr, int len)
 static void LED_Init(void)
 {
     // 开启时钟
-    LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOH);
+    LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOB);
 
-    // PH7 LED
+    // PB1 LED 低电平亮
     LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin         = LL_GPIO_PIN_7;
     GPIO_InitStruct.Mode        = LL_GPIO_MODE_OUTPUT;
     GPIO_InitStruct.Speed       = LL_GPIO_SPEED_LOW;
     GPIO_InitStruct.OutputType  = LL_GPIO_OUTPUT_PUSHPULL;
     GPIO_InitStruct.Pull        = LL_GPIO_PULL_NO;
-    LL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin         = LL_GPIO_PIN_1;
+    LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1);     // 默认高电平LED不亮
 }
 
 // 错误指示(LED闪烁 串口打印错误信息)
@@ -378,7 +389,7 @@ static void Error_Handler(const char* text)
     // LED闪烁
     while(1)
     {
-        LL_GPIO_TogglePin(GPIOH, LL_GPIO_PIN_7);
+        LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_1);
         delay_ms(250);
     }
 }
