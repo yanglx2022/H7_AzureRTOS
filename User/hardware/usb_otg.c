@@ -1,5 +1,5 @@
 /**
- * @brief   : USB_OTG硬件驱动
+ * @brief   : USB_OTG硬件驱动(HAL)
  * @author  : yanglx2022
  * @version : V0.1
  * @date    : 2021-12-05

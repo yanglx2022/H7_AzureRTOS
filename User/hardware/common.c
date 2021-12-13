@@ -381,10 +381,16 @@ static void LED_Init(void)
 static void Error_Handler(const char* text)
 {
     // 打印错误信息
-    printf("[Unhandled Error]");
-    if (text)
+    const char* tip = "[Unhandled Error] ";
+    for(int i = 0; i < strlen(tip); i++)
     {
-        printf("%s", text);
+        LL_USART_TransmitData8(USART1, tip[i]);
+        while(LL_USART_IsActiveFlag_TC(USART1) == 0);
+    }
+    for(int i = 0; i < strlen(text); i++)
+    {
+        LL_USART_TransmitData8(USART1, text[i]);
+        while(LL_USART_IsActiveFlag_TC(USART1) == 0);
     }
     // LED闪烁
     while(1)
@@ -398,31 +404,31 @@ static void Error_Handler(const char* text)
 // NMI
 void NMI_Handler(void)
 {
-    Error_Handler("NMI: Non maskable interrupt");
+    Error_Handler("NMI: Non maskable interrupt\n");
 }
 
 // HardFault
 void HardFault_Handler(void)
 {
-    Error_Handler("HardFault: Hard fault interrupt");
+    Error_Handler("HardFault: Hard fault interrupt\n");
 }
 
 // MemManage
 void MemManage_Handler(void)
 {
-    Error_Handler("MemManage: Memory management fault");
+    Error_Handler("MemManage: Memory management fault\n");
 }
 
 // BusFault
 void BusFault_Handler(void)
 {
-    Error_Handler("BusFault: Pre-fetch fault, memory access fault");
+    Error_Handler("BusFault: Pre-fetch fault, memory access fault\n");
 }
 
 // UsageFault
 void UsageFault_Handler(void)
 {
-    Error_Handler("UsageFault: Undefined instruction or illegal state");
+    Error_Handler("UsageFault: Undefined instruction or illegal state\n");
 }
 /* */
 

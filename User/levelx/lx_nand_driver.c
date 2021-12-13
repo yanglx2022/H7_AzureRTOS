@@ -8,7 +8,7 @@
 #include "lx_nand_driver.h"
 
 // LX_NAND_FLASH实例(由于开启了直接映射缓存此结构会很大(>1MB),因此放在SDRAM)
-LX_NAND_FLASH nand_flash __attribute__ ((section (".SDRAM"), aligned (4)));
+LX_NAND_FLASH nand_flash __attribute__ ((section (".bss.SDRAM"), aligned (4)));
 
 // 缓存区
 static uint8_t verify_buffer[NAND_PAGE_SIZE + NAND_SPARE_SIZE];

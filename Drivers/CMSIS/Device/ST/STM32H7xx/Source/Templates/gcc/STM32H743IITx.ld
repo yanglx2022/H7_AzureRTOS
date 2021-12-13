@@ -150,6 +150,11 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
   } >DTCMRAM AT> FLASH
 
+  /* 自定义SDRAM段 */
+  .SDRAM (NOLOAD) :   /* NOLOAD 避免初值拷贝造成main之前访问SDRAM(尚未初始化) */
+  {
+    *(.bss.SDRAM)     /* 段名.bss开头表示在bss段创建变量 */
+  } > SDRAM
   
   /* Uninitialized data section */
   . = ALIGN(4);
@@ -183,13 +188,8 @@ SECTIONS
   {
     *(.AXI_RAM)
     *(.AXI_RAM*)
-  } > RAM_D1 AT> FLASH  /* 必须添加AT> FLASH,否则生成超大bin文件
+  } > RAM_D1 AT> FLASH  /* LMA指定到FLASH */
 
-  /* 自定义SDRAM段 */
-  .SDRAM (NOLOAD) :     /* NOLOAD属性强制链接到bss段(赋的初值将无效),否则即使未赋初值仍旧链接到data段 */
-  {
-    *(.SDRAM)
-  } > SDRAM
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

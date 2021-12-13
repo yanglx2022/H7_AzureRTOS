@@ -31,17 +31,14 @@ typedef enum
     HR_ERROR,           // 未知错误
     HR_NO_DEVICE,       // 无设备
     HR_TIMEOUT,         // 超时
-    HR_SD_PLUG_IN,      // SD卡插入
-    HR_SD_PLUG_OFF,     // SD卡拔出
+    HR_SD_PRESENT,      // SD卡插入
+    HR_SD_NOT_PRESENT,  // SD卡未插入
     HR_INVALID_ADDRESS, // 地址无效
     HR_ECC_ERROR        // ECC校验失败
 } HRESULT;
 
 // 中断优先级分配
-#define SYSTICK_PRI                 2
-#define ADC_DMA_PRI                 4
-#define ADC_TIM_PRI                 5
-#define MDMA_PRI                    6
+#define SYSTICK_PRI                 4   // 仅未使用RTOS时有效
 #define SDCARD_PRI                  7
 #define USB_PRI                     8
 
@@ -50,10 +47,7 @@ typedef enum
 #if USE_RTOS
 #include "tx_api.h"
 // 任务优先级分配
-#define FILE_TASK_PRI               14
-#define TOUCH_TASK_PRI              19
 #define USB_TASK_PRI                20
-#define GUI_TASK_PRI                25
 #define IDLE_TASK_PRI               31
 #endif
 

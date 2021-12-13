@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "common.h": "c",
+        "stm32h7xx_ll_cortex.h": "c",
+        "stm32h7xx.h": "c",
+        "stm32h743xx.h": "c",
+        "usb_desc.h": "c",
+        "ux_device_class_storage.h": "c",
+        "ux_dcd_stm32.h": "c",
+        "usb_storage_driver.h": "c",
+        "usb_otg.h": "c",
+        "nand_driver.h": "c",
+        "lx_nand_driver.h": "c",
+        "usb_device.h": "c",
+        "nand.h": "c",
+        "lx_api.h": "c"
+    }
+}

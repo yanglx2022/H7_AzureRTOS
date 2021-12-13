@@ -15,9 +15,8 @@ LR_IROM1 0x08000000 0x00200000  {    ; load region size_region
 ;  RW_IRAM2 0x24000000 0x00080000  {  ; RW data AXI SRAM 512KB
 ;   *(.AXI_RAM)
 ;  }
-  RW_IRAM3  0xC0000000 UNINIT 0x02000000  {  ; RW data SDRAM 32MB
-;   *(.SDRAM)
-    lx_nand_driver.o(+ZI)
+  RW_IRAM3  0xC0000000 UNINIT 0x02000000  { ; SDRAM 32MB SDRAM在main函数中初始化,因此需要设置UNINIT防止main之前访问
+   *(.bss.SDRAM)                            ; 段名.bss开头表示在ZI段创建变量
   }
 }
 
